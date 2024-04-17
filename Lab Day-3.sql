@@ -1,0 +1,133 @@
+-- create
+use lab;
+
+CREATE TABLE INSTRUCTOR (
+  ID INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  dept_name TEXT NOT NULL,
+  salary INT
+);
+
+-- insert
+INSERT INTO INSTRUCTOR VALUES (10101, 'Srinivasan', 'Comp. Sci.', '65000');
+INSERT INTO INSTRUCTOR VALUES (12121, 'Wu', 'Finance', '90000');
+INSERT INTO INSTRUCTOR VALUES (15151, 'Mozart', 'Music', '40000');
+INSERT INTO INSTRUCTOR VALUES (22222, 'Einstein', 'Physics', '95000');
+INSERT INTO INSTRUCTOR VALUES (32343, 'El Said', 'History', '60000');
+INSERT INTO INSTRUCTOR VALUES (33456, 'Gold', 'Physics', '87000');
+INSERT INTO INSTRUCTOR VALUES (45565, 'Katz', 'Comp. Sci.', '75000');
+INSERT INTO INSTRUCTOR VALUES (58583, 'Califieri', 'History', '62000');
+INSERT INTO INSTRUCTOR VALUES (76543, 'Singh', 'Finance', '80000');
+INSERT INTO INSTRUCTOR VALUES (76766, 'Crick', 'Biology', '72000');
+INSERT INTO INSTRUCTOR VALUES (83821, 'Brandt', 'Comp. Sci.', '92000');
+INSERT INTO INSTRUCTOR VALUES (98345, 'Kim', 'Elec. Eng.', '80000');
+INSERT INTO INSTRUCTOR VALUES('10211', 'Smith', 'Biology', 66000);
+INSERT INTO INSTRUCTOR VALUES ('10212', 'Tom', 'Biology', NULL);
+
+select * from INSTRUCTOR;
+-- fetch 
+
+-- create
+CREATE TABLE TEACHES (
+  ID INTEGER NOT NULL,
+  COURSE_ID VARCHAR(50) NOT NULL,
+  SEC_ID TEXT NOT NULL,
+  SEMESTER CHAR(50) NOT NULL,
+  YEAR INT NOT NULL,
+  FOREIGN KEY (ID) REFERENCES INSTRUCTOR(ID)
+);
+
+-- 2
+-- insert
+INSERT INTO TEACHES VALUES (10101, 'CS-101', '1', 'Fall', 2017);
+INSERT INTO TEACHES VALUES (10101, 'CS-315', '1', 'Spring', 2018);
+INSERT INTO TEACHES VALUES (10101, 'CS-347', '1', 'Fall', 2017);
+INSERT INTO TEACHES VALUES (12121, 'FIN-201', '1', 'Spring', 2018);
+INSERT INTO TEACHES VALUES (15151, 'MU-199', '1', 'Spring',2018);
+INSERT INTO TEACHES VALUES (22222, 'PHY-101', '1', 'Fall', 2017);
+INSERT INTO TEACHES VALUES (32343, 'HIS-351', '1', 'Spring', 2018);
+INSERT INTO TEACHES VALUES (45565, 'CS-101', '1', 'Spring', 2018);
+INSERT INTO TEACHES VALUES (45565, 'CS-319', '1', 'Spring', 2018);
+INSERT INTO TEACHES VALUES (76766, 'BIO-101', '1', 'Summer', 2017);
+INSERT INTO TEACHES VALUES (76766, 'BIO-301', '1', 'Summer', 2018);
+INSERT INTO TEACHES VALUES (83821, 'CS-190', '2', 'Spring', 2017);
+INSERT INTO TEACHES VALUES (83821, 'CS-319', '2', 'Spring', 2018);
+INSERT INTO TEACHES VALUES (98345, 'EE-181', '1', 'Spring', 2017);
+
+-- fetch 
+SELECT * FROM TEACHES;
+
+SELECT AVG(salary) FROM INSTRUCTOR;
+
+-- Experiment 4:
+-- 1
+SELECT dept_name from INSTRUCTOR where salary > 74153.8462;
+
+-- 2
+select name, COURSE_ID from INSTRUCTOR inner join TEACHES on INSTRUCTOR.ID=TEACHES.ID;
+
+-- 3
+select INSTRUCTOR.name, coalesce(teaches.COURSE_ID, 'NULL') 
+AS COURSE_ID
+from INSTRUCTOR LEFT join TEACHES on INSTRUCTOR.ID=TEACHES.ID;
+
+-- 4
+CREATE VIEW faculty AS 
+SELECT ID, name, dept_name FROM INSTRUCTOR;
+Select * from faculty;
+
+-- 5
+GRANT SELECT ON name.faculty TO PUBLIC;
+
+-- experiment 5
+-- 1
+CREATE VIEW department_salary_totals AS
+SELECT dept_name, SUM(salary) AS total_salary
+FROM instructor
+GROUP BY dept_name;
+
+-- 2
+select * from department_salary_totals;
+
+-- 3
+CREATE ROLE student;
+
+-- 4
+GRANT SELECT ON faculty TO student;
+
+-- 5
+CREATE USER new_user IDENTIFIED BY 'password';
+
+-- 6
+SELECT * FROM faculty WHERE dept_name = 'Biology';
+
+-- 7
+REVOKE student FROM new_user;
+
+-- 8
+DROP ROLE student;
+
+-- 9
+GRANT SELECT ON faculty TO new_user;
+
+-- 10
+SELECT * FROM faculty WHERE dept_name = 'Finance';
+
+-- 11
+CREATE TABLE TEACHES2 (
+ID INTEGER NOT NULL,
+COURSE_ID VARCHAR(50) NOT NULL,
+SEC_ID TEXT NOT NULL,
+SEMESTER CHAR(50) NOT NULL CHECK (SEMESTER IN ('Fall', 'Winter', 'Spring', 'Summer')),
+YEAR INT NOT NULL,
+FOREIGN KEY (ID) REFERENCES instructor(ID)
+);
+
+-- 12
+select * from TEACHES2;
+
+-- 13
+CREATE INDEX teaches_id_index ON TEACHES (ID);
+
+-- 14
+ DROP INDEX teaches_id_index ON TEACHES2;
